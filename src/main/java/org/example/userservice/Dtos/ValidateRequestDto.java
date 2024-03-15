@@ -6,6 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ValidateRequestDto {
-    String token;
-    Long userId;
+    private String token;
+    private Long id;
 }

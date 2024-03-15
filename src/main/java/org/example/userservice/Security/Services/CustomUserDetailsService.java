@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
+//username = ly , password = ly which can be tried for spring security
 @Service
 public class CustomUserDetailsService implements UserDetailsService  {
 

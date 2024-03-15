@@ -42,7 +42,7 @@ public class AuthController {
 
     @PostMapping("/auth/validate")
     public ResponseEntity<Boolean> validateToken(@RequestBody ValidateRequestDto validateRequestDto) {
-        Boolean isValid = authService.validateToken(validateRequestDto.getToken(), validateRequestDto.getUserId());
+        Boolean isValid = authService.validateToken(validateRequestDto.getToken(), validateRequestDto.getId());
         return new ResponseEntity<>(isValid,HttpStatus.OK);
     }
 

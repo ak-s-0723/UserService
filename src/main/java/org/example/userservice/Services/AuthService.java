@@ -99,8 +99,14 @@ public class AuthService {
         return new Pair<User,MultiValueMap<String,String>>(user,headers);
     }
 
-    public Boolean validateToken(String token, Long userId) {
-      Optional<Session> optionalSession = sessionRepository.findByTokenAndUser_Id(token,userId);
+    /**
+     *
+     * @param token - token
+     * @param id - user id
+     * @return whether session is valid or not
+     */
+    public Boolean validateToken(String token, Long id) {
+      Optional<Session> optionalSession = sessionRepository.findByTokenAndUser_Id(token,id);
 
       if(optionalSession.isEmpty()) {
           System.out.println("No Token or User found");
@@ -124,7 +130,7 @@ public class AuthService {
           return false;
       }
 
-      Optional<User> optionalUser = userRepository.findById(userId);
+      Optional<User> optionalUser = userRepository.findById(id);
       if(optionalUser.isEmpty()) {
           return false;
       }
