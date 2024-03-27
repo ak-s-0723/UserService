@@ -1,11 +1,16 @@
 package org.example.userservice.Services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
 import org.antlr.v4.runtime.misc.Pair;
+import org.example.userservice.Clients.KafkaProducerClient;
+import org.example.userservice.Dtos.SendEmailMessageDto;
+import org.example.userservice.Dtos.UserDto;
 import org.example.userservice.Models.Session;
 import org.example.userservice.Models.SessionStatus;
 import org.example.userservice.Models.User;
@@ -40,6 +45,12 @@ public class AuthService {
     @Autowired
     private SecretKey secret;
 
+    @Autowired
+    private KafkaProducerClient kafkaProducerClient;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     public User signUp(String email, String password) {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
@@ -49,6 +60,20 @@ public class AuthService {
           user.setPassword(bCryptPasswordEncoder.encode(password));
           User saveduser = userRepository.save(user);
           return saveduser;
+        }
+
+        UserDto userDto = new UserDto();
+        userDto.setEmail(email);
+        //Put message in Queue
+        try {
+            SendEmailMessageDto sendEmailMessageDto = new SendEmailMessageDto();
+            sendEmailMessageDto.setTo(email);
+            sendEmailMessageDto.setFrom("admin@scaler.com");
+            sendEmailMessageDto.setSubject("Welcome to Scaler");
+            sendEmailMessageDto.setBody("Have a pleasant stay");
+            kafkaProducerClient.sendMessage("sendEmail", objectMapper.writeValueAsString(sendEmailMessageDto));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
         return userOptional.get();
@@ -147,3 +172,14 @@ public class AuthService {
       return true;
     }
 }
+
+
+/*
+signup - > topic , handleSignup
+login ->  handleLogin
+ordercreated  -> handleOrderCreation
+account suspended ->
+
+
+
+ */
