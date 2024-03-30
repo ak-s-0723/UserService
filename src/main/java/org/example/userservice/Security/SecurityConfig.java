@@ -44,8 +44,8 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//    @Autowired
-//    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Bean
     @Order(1)
@@ -74,21 +74,21 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
             throws Exception {
-//        http
-//                .authorizeHttpRequests((authorize) -> authorize
-//                        .requestMatchers("/actuator/**").permitAll()
-//                        .requestMatchers("/users/**").permitAll()
-//                        //.requestMatchers("/auth/**").permitAll()
-//                        .anyRequest().authenticated()
-//
-//                )
-//                // Form login handles the redirect to the login page from the
-//                // authorization server filter chain
-//                .formLogin(Customizer.withDefaults());
+        http
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+                        //.requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
 
-        http.cors().disable();
-        http.csrf().disable();
-        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+                )
+                // Form login handles the redirect to the login page from the
+                // authorization server filter chain
+                .formLogin(Customizer.withDefaults());
+
+       // http.cors().disable();
+       // http.csrf().disable();
+       // http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
         return http.build();
     }
 
@@ -106,13 +106,13 @@ public class SecurityConfig {
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient oidcClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("oidc-client")
-                .clientSecret("{noop}secret")
+                .clientId("client")
+                .clientSecret(bCryptPasswordEncoder.encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
+                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/client")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
